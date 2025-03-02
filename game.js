@@ -6,26 +6,28 @@ document.addEventListener("DOMContentLoaded", function () {
         "clue4": "Final clue: Meet at the auditorium!"
     };
 
-    let scannedClues = JSON.parse(localStorage.getItem("scannedClues")) || [];
+    let lastClue = localStorage.getItem("lastClue") || null;
     const clueList = document.getElementById("clue-list");
     const scanNextBtn = document.getElementById("scan-next");
     const qrReaderDiv = document.getElementById("qr-reader");
 
-    function updateClueDisplay() {
-        clueList.innerHTML = ""; // Clear existing list
-        scannedClues.forEach(clue => {
-            let li = document.createElement("li");
-            li.textContent = clue;
-            clueList.appendChild(li);
+    function updateClueList() {
+        clueList.innerHTML = ""; // Clear previous list
+        Object.keys(clues).forEach((key) => {
+            if (localStorage.getItem(key)) {
+                const li = document.createElement("li");
+                li.textContent = clues[key];
+                clueList.appendChild(li);
+            }
         });
     }
-    updateClueDisplay();
+    updateClueList();
 
     let scanner;
 
     function startQRScanner() {
-        qrReaderDiv.style.display = "block"; // Show scanner
-        scanNextBtn.style.display = "none"; // Hide scan button
+        qrReaderDiv.style.display = "block";
+        scanNextBtn.style.display = "none"; 
 
         if (typeof Html5QrcodeScanner !== "undefined") {
             scanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
@@ -39,19 +41,25 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
 
-                const expectedNextClue = `clue${scannedClues.length + 1}`;
+                const lastClueNumber = lastClue ? parseInt(lastClue.slice(4)) : 0;
+                const expectedNextClue = `clue${lastClueNumber + 1}`;
 
-                if (decodedText !== expectedNextClue) {
+                console.log("Expected:", expectedNextClue);
+
+                if (decodedText === expectedNextClue) {
+                    lastClue = decodedText;
+                    localStorage.setItem(lastClue, "true"); // Store completed clues
+
+                    updateClueList(); // Append the new clue to the list
+
+                    qrReaderDiv.style.display = "none";
+                    scanNextBtn.style.display = "block";
+
+                    scanner.clear();
+                    qrReaderDiv.innerHTML = "";
+                } else {
                     alert("⚠️ Scan the correct QR in order!");
-                    return;
                 }
-
-                scannedClues.push(clues[decodedText]);
-                localStorage.setItem("scannedClues", JSON.stringify(scannedClues));
-
-                updateClueDisplay();
-                qrReaderDiv.style.display = "none"; // Hide scanner
-                scanNextBtn.style.display = "block"; // Show scan next button
             });
         } else {
             console.error("❌ QR scanner library not loaded.");
