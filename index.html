@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treasure Hunt</title>
+    <script src="https://unpkg.com/html5-qrcode"></script> <!-- QR Scanner Library -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Treasure Hunt Game</h1>
+    
+    <button id="reset-game">Reset Game</button>
+    <a href="game.html"><button id="start-game">Start the Game</button></a>
+
+    <script>
+        document.getElementById("reset-game").addEventListener("click", function () {
+            localStorage.clear();
+            alert("Game progress has been reset!");
+        });
+    </script>
+</body>
+</html>
