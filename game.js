@@ -6,16 +6,20 @@ document.addEventListener("DOMContentLoaded", function () {
         "clue4": "Final clue: Meet at the auditorium!"
     };
 
-    let lastClue = localStorage.getItem("lastClue") || null;
-    const clueDisplay = document.getElementById("clue");
-    const revealDiv = document.getElementById("reveal");
+    let scannedClues = JSON.parse(localStorage.getItem("scannedClues")) || [];
+    const clueList = document.getElementById("clue-list");
     const scanNextBtn = document.getElementById("scan-next");
     const qrReaderDiv = document.getElementById("qr-reader");
 
-    function updateClueText() {
-        clueDisplay.innerText = lastClue ? clues[lastClue] : "Scan the first QR to start!";
+    function updateClueDisplay() {
+        clueList.innerHTML = ""; // Clear existing list
+        scannedClues.forEach(clue => {
+            let li = document.createElement("li");
+            li.textContent = clue;
+            clueList.appendChild(li);
+        });
     }
-    updateClueText();
+    updateClueDisplay();
 
     let scanner;
 
@@ -31,37 +35,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("Scanned:", decodedText);
 
                 if (!clues.hasOwnProperty(decodedText)) {
-                    clueDisplay.innerText = "❌ Invalid QR Code! Try again.";
-                    setTimeout(updateClueText, 1000); // Restore clue after 1s
+                    alert("❌ Invalid QR Code! Try again.");
                     return;
                 }
 
-                const lastClueNumber = lastClue ? parseInt(lastClue.slice(4)) : 0;
-                const expectedNextClue = `clue${lastClueNumber + 1}`;
+                const expectedNextClue = `clue${scannedClues.length + 1}`;
 
-                console.log("Expected:", expectedNextClue);
-
-                // **Fix: Only update lastClue when the correct QR is scanned**
                 if (decodedText !== expectedNextClue) {
-                    clueDisplay.innerText = "⚠️ Scan the correct QR in order!";
-                    setTimeout(updateClueText, 1000); // Restore clue after 1s
+                    alert("⚠️ Scan the correct QR in order!");
                     return;
                 }
 
-                // Update last clue only if scanned in order
-                lastClue = decodedText;
-                localStorage.setItem("lastClue", lastClue);
+                scannedClues.push(clues[decodedText]);
+                localStorage.setItem("scannedClues", JSON.stringify(scannedClues));
 
-                revealDiv.style.display = "block";
-                setTimeout(() => {
-                    revealDiv.style.display = "none";
-                    updateClueText();
-                    qrReaderDiv.style.display = "none";
-                    scanNextBtn.style.display = "block";
-                }, 1000);
-
-                scanner.clear();
-                qrReaderDiv.innerHTML = "";
+                updateClueDisplay();
+                qrReaderDiv.style.display = "none"; // Hide scanner
+                scanNextBtn.style.display = "block"; // Show scan next button
             });
         } else {
             console.error("❌ QR scanner library not loaded.");

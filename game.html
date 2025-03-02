@@ -8,11 +8,19 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="reveal" style="display: none;">🎉 Reveal!</div>
-<p id="clue">Scan the first QR to start!</p>
-<div id="qr-reader"></div>
-<button id="scan-next" style="display: none;">Scan Next QR</button>
+    <h1>Treasure Hunt</h1>
+    
+    <!-- Clues List -->
+    <div id="clue-container">
+        <h2>Scanned Clues:</h2>
+        <ul id="clue-list"></ul>
+    </div>
 
+    <!-- QR Scanner -->
+    <div id="qr-reader"></div>
+
+    <!-- Button to Scan Next QR -->
+    <button id="scan-next" style="display: none;margin: 0 auto;">Scan Next QR</button>
 
     <script src="game.js"></script>
 </body>
