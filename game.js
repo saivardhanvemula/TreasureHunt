@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
     const clues = {
-        "clue1": "Go to the library entrance and scan the next QR code.",
-        "clue2": "Find the canteen's notice board and scan the next QR code.",
-        "clue3": "Check the computer lab's door for the next clue.",
-        "clue4": "Final clue: Meet at the auditorium!"
+        "clue1": "I am the healthiest place in the college",
+        "clue2": "I am the most useful place, yet no one uses me!!",
+        "clue3": "I am always open",
+        "clue4": "Return to the starting point"
     };
+    
 
     let lastClue = localStorage.getItem("lastClue") || null;
     const clueList = document.getElementById("clue-list");
